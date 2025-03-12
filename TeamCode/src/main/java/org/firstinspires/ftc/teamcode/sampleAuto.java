@@ -36,7 +36,7 @@ public class sampleAuto extends LinearOpMode {
 
         waitForStart();
 
-        while (opModeIsActive()) {\A\                                                                                                                                                                                                                                               
+        while (opModeIsActive()) {
             //execute methods on the object Main <3
             /*right_motor.setPower(1.0);
             left_motor.setPower(1.0);
