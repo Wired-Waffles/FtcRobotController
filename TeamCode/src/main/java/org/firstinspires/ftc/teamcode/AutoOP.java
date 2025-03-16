@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name="Sample")
+@Autonomous
 public class AutoOP extends LinearOpMode {
     private DcMotor left_motor;
     private DcMotor right_motor;
