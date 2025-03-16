@@ -48,7 +48,7 @@ public class sampleAuto extends LinearOpMode {
 
             //Drivechain Methods: Forwards, Backwards, TurnRight, TurnLeft
 
-            Main.Forwards(2000);
+            Main.Forwards(500);
             Thread.sleep(20000);
             telemetry.update();
 
