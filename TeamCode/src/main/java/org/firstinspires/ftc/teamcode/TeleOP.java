@@ -107,10 +107,10 @@ public class TeleOP extends LinearOpMode {
             while (opModeIsActive()) {
                 // Put loop blocks here.
                 speed_mod = 0.5;
-                if (gamepad1.options == true) {
-                    speed_mod += -0.3;
+                if (gamepad1.options) {
+                    speed_mod -= 0.3;
                 }
-                if ((gamepad1.left_bumper && gamepad1.touchpad_finger_1) == true) {
+                if (gamepad1.left_bumper && gamepad1.touchpad_finger_1) {
                     turn = gamepad1.touchpad_finger_1_x * speed_mod * 3;
                     left_motor.setPower(Math.min(Math.max((drive_motor + turn) * 1, -1), 1));
                     right_motor.setPower(-Math.min(Math.max(drive_motor - turn, -1), 1));
