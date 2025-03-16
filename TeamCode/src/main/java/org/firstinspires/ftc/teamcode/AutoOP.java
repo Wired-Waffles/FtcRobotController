@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @Autonomous(name="Sample")
-public class sampleAuto extends LinearOpMode {
+public class AutoOP extends LinearOpMode {
     private DcMotor left_motor;
     private DcMotor right_motor;
     private DcMotor armlift;
@@ -24,7 +24,7 @@ public class sampleAuto extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         left_motor = hardwareMap.get(DcMotor.class, "left_motor");
         right_motor = hardwareMap.get(DcMotor.class, "right_motor");
-        sampleAuto Main = new sampleAuto();
+        AutoOP Main = new AutoOP();
 
         right_motor.setDirection(DcMotorSimple.Direction.REVERSE);
         telemetry.addData("Setup", "complete");

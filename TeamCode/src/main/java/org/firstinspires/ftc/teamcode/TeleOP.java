@@ -20,7 +20,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 
 @TeleOp(name = "Dual Controller")
-public class teleOP extends LinearOpMode {
+public class TeleOP extends LinearOpMode {
 
     private DcMotor left_motor;
     private DcMotor right_motor;
