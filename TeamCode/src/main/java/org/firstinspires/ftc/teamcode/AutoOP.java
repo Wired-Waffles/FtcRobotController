@@ -37,14 +37,6 @@ public class AutoOP extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            //execute methods on the object Main <3
-            /*right_motor.setPower(1.0);
-            left_motor.setPower(1.0);
-
-            Thread.sleep(2000);
-
-            right_motor.setPower(0);
-            left_motor.setPower(0);*/
 
             //Drivechain Methods: Forwards, Backwards, TurnRight, TurnLeft
 
