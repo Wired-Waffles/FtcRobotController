@@ -45,9 +45,6 @@ public class TeleOP extends LinearOpMode {
     int smallarmlift_speedmod;
     double viper2;
 
-    /**
-     * Display info (using telemetry) for a recognized AprilTag.
-     */
     private void telemetryAprilTag() {
         List<AprilTagDetection> myAprilTagDetections;
         AprilTagDetection myAprilTagDetection;
