@@ -123,9 +123,9 @@ public class TeleOP extends LinearOpMode {
                 spinner2.setPower(-gamepad2.right_stick_y);
                 // basket and gripper code
                 if (gamepad2.circle) {
-                    basket.setPosition(0.3);
+                    basket.setPosition(0.7);
                 } else {
-                    basket.setPosition(-0.2);
+                    basket.setPosition(0);
                 }
                 if (gamepad1.cross || gamepad2.square) {
                     grip.setPosition(0.3);
