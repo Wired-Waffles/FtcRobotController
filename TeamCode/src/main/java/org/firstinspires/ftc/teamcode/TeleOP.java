@@ -26,10 +26,9 @@ public class TeleOP extends LinearOpMode {
     private DcMotor right_motor;
     private DcMotor armlift;
     private DcMotor viper;
-    private CRServo spinner;
-    private CRServo spinner2;
-    private Servo basket;
     private Servo grip;
+    private CRServo yaw;
+    private CRServo Viperspin;
 
     boolean USE_WEBCAM;
     AprilTagProcessor myAprilTagProcessor;
@@ -78,10 +77,10 @@ public class TeleOP extends LinearOpMode {
         right_motor = hardwareMap.get(DcMotor.class, "right_motor");
         armlift = hardwareMap.get(DcMotor.class, "arm lift");
         viper = hardwareMap.get(DcMotor.class, "viper");
-        spinner = hardwareMap.get(CRServo.class, "spinner");
-        spinner2 = hardwareMap.get(CRServo.class, "spinner2");
-        basket = hardwareMap.get(Servo.class, "basket");
         grip = hardwareMap.get(Servo.class, "grip");
+        yaw = hardwareMap.get(CRServo.class, "yaw");
+        Viperspin = hardwareMap.get(CRServo.class, "Viperspin");
+
 
         USE_WEBCAM = true;
         // Put initialization blocks here.
@@ -117,21 +116,19 @@ public class TeleOP extends LinearOpMode {
                 smallarmlift_speedmod = 1;
                 viper2 = (gamepad1.left_trigger - gamepad1.right_trigger) * smallarmlift_speedmod + 0.05;
                 viper.setPower(Math.min(Math.max(viper2, -1), 1));
-                telemetry.addData("small armlift", viper2);
-                // spinner code
-                spinner.setPower(gamepad2.right_stick_y);
-                spinner2.setPower(-gamepad2.right_stick_y);
-                // basket and gripper code
-                if (gamepad2.circle) {
-                    basket.setPosition(0.7);
-                } else {
-                    basket.setPosition(0);
-                }
+                //claw
+                telemetry.addData("small arm lift", viper2);
                 if (gamepad1.cross || gamepad2.square) {
                     grip.setPosition(0.3);
                 } else {
                     grip.setPosition(0);
                 }
+                //yaw
+                if (gamepad2.dpad_left) { yaw.setPower(0.1); }
+                if (gamepad2.dpad_right) { yaw.setPower(-0.1); }
+                // Jaw (viperspin)
+                if (gamepad2.dpad_up) { Viperspin.setPower(0.1); }
+                if (gamepad2.dpad_down) {Viperspin.setPower(-0.1); }
                 telemetryAprilTag();
                 telemetry.addData("turn value", turn);
                 telemetry.addData("target power", drive_motor);
@@ -139,6 +136,7 @@ public class TeleOP extends LinearOpMode {
                 telemetry.update();
             }
         }
+
     }
 
     /**
