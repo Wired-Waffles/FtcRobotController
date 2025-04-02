@@ -124,14 +124,15 @@ public class TeleOP extends LinearOpMode {
                     grip.setPosition(0);
                 }
                 //yaw
-                if (gamepad2.dpad_left) { yaw.setPower(0.1); }
-                if (gamepad2.dpad_right) { yaw.setPower(-0.1); }
+                if (gamepad2.dpad_left) { yaw.setPower(0.3); } else {yaw.setPower(0);}
+                if (gamepad2.dpad_right) { yaw.setPower(-0.3); } else {yaw.setPower(0);}
                 // Jaw (viperspin)
-                if (gamepad2.dpad_up) { Viperspin.setPower(0.1); }
-                if (gamepad2.dpad_down) {Viperspin.setPower(-0.1); }
+                if (gamepad2.dpad_up) { Viperspin.setPower(0.3); } else {Viperspin.setPower(0);}
+                if (gamepad2.dpad_down) {Viperspin.setPower(-0.3); } else {Viperspin.setPower(0);}
                 telemetryAprilTag();
                 telemetry.addData("turn value", turn);
                 telemetry.addData("target power", drive_motor);
+
                 telemetry.addData("motor power", left_motor.getPower());
                 telemetry.update();
             }
