@@ -118,17 +118,17 @@ public class TeleOP extends LinearOpMode {
                 viper.setPower(Math.min(Math.max(viper2, -1), 1));
                 //claw
                 telemetry.addData("small arm lift", viper2);
-                if (gamepad1.cross || gamepad2.square) {
+                if (gamepad2.square) {
                     grip.setPosition(0.3);
                 } else {
                     grip.setPosition(0);
                 }
                 //yaw
-                if (gamepad2.dpad_left) { yaw.setPower(0.3); } else {yaw.setPower(0);}
-                if (gamepad2.dpad_right) { yaw.setPower(-0.3); } else {yaw.setPower(0);}
+                if (gamepad2.dpad_left) { yaw.setPower(1); } else {yaw.setPower(0);}
+                if (gamepad2.dpad_right) { yaw.setPower(-1); } else {yaw.setPower(0);}
                 // Jaw (viperspin)
-                if (gamepad2.dpad_up) { Viperspin.setPower(0.3); } else {Viperspin.setPower(0);}
-                if (gamepad2.dpad_down) {Viperspin.setPower(-0.3); } else {Viperspin.setPower(0);}
+                if (gamepad2.dpad_up) { Viperspin.setPower(1); } else {Viperspin.setPower(0);}
+                if (gamepad2.dpad_down) {Viperspin.setPower(-1); } else {Viperspin.setPower(0);}
                 telemetryAprilTag();
                 telemetry.addData("turn value", turn);
                 telemetry.addData("target power", drive_motor);
