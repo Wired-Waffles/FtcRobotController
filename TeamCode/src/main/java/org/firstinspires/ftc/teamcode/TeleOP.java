@@ -21,7 +21,7 @@ import java.util.List;
 
 @TeleOp(name = "Dual Controller")
 public class TeleOP extends LinearOpMode {
-
+//hi adi
     private DcMotor left_motor;
     private DcMotor right_motor;
     private DcMotor armlift;
