@@ -130,7 +130,6 @@ public class TeleOP extends LinearOpMode {
                 telemetry.addData("dpad left", gamepad2.dpad_left);
                 telemetry.addData("Yaw power", yaw.getPower());
                 telemetry.addData("Viperspin power", Viperspin.getPower());
-                //constantly returns gamepad2.dpad_left ^^^^
                 if (gamepad2.dpad_left) {
                     yaw.setPower(1);
 
