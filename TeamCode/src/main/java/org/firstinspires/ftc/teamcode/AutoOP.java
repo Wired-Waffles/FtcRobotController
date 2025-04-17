@@ -13,9 +13,6 @@ public class AutoOP extends LinearOpMode {
     private DcMotor right_motor;
     private DcMotor armlift;
     private DcMotor viper;
-    private CRServo spinner;
-    private CRServo spinner2;
-    private Servo basket;
     private Servo grip;
 
 
