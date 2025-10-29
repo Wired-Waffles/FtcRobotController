@@ -67,6 +67,7 @@ public class TeleOP extends LinearOpMode {
             }
 
             driveChain.moveRobot(drivePower, turn);
+            telemetry.update();
         }
     }
 }
