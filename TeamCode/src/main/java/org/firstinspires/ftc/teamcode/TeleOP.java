@@ -1,182 +1,72 @@
 package org.firstinspires.ftc.teamcode;
 
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.JavaUtil;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.mechanisms.AprilTagVision;
+import org.firstinspires.ftc.teamcode.mechanisms.DriveChainTank;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-import java.util.List;
-
-@TeleOp(name = "Dual Controller")
+@TeleOp(name = "TeleOP main")
 public class TeleOP extends LinearOpMode {
-//hi adi
-    private DcMotor left_motor;
-    private DcMotor right_motor;
-    private DcMotor armlift;
-    private DcMotor viper;
-    private Servo grip;
-    private CRServo yaw;
-    private CRServo Viperspin;
+    //redoing for decode <3
+    //using new mechanisms package cuz cleaner
 
-    boolean USE_WEBCAM;
-    AprilTagProcessor myAprilTagProcessor;
-    Position cameraPosition;
-    YawPitchRollAngles cameraOrientation;
+    //mech obj declare
+    DriveChainTank driveChain = new DriveChainTank();
+    AprilTagVision aprilTagVision = new AprilTagVision();
+    //everything bloody else
+    final double DESIRED_DISTANCE = 24.0; //  this is how close the camera should get to the target (inches)
 
-    boolean gripperOpen;
-    double speed_mod;
+    //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
+    //  applied to the drive motors to correct the error.
+    //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
+    final double SPEED_GAIN =   0.02 ;   //  Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double TURN_GAIN  =   0.01 ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.25;  //  Clip the turn speed to this max value (adjust for your robot)
+
+    private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
+    private static final int DESIRED_TAG_ID = -1;    // Choose the tag you want to approach or set to -1 for ANY tag.
+    private VisionPortal visionPortal;               // Used to manage the video source.
+    private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
+    private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
+
+    double drivePower;
     double turn;
-    double drive_motor;
-    double arm_lift_speedmod;
-    double arm_lift;
-    int smallarmlift_speedmod;
-    double viper2;
-
-    private void telemetryAprilTag() {
-        List<AprilTagDetection> myAprilTagDetections;
-        AprilTagDetection myAprilTagDetection;
-
-        // Get a list of AprilTag detections.
-        myAprilTagDetections = myAprilTagProcessor.getDetections();
-        telemetry.addData("# AprilTags Detected", JavaUtil.listLength(myAprilTagDetections));
-        // Iterate through list and call a function to display info for each recognized AprilTag.
-        for (AprilTagDetection myAprilTagDetection_item : myAprilTagDetections) {
-            myAprilTagDetection = myAprilTagDetection_item;
-            // Display info about the detection.
-            telemetry.addLine("");
-            if (myAprilTagDetection.metadata != null) {
-                telemetry.addLine("==== (ID " + myAprilTagDetection.id + ") " + myAprilTagDetection.metadata.name);
-                telemetry.addLine("XYZ " + JavaUtil.formatNumber(myAprilTagDetection.robotPose.getPosition().x, 6, 1) + " " + JavaUtil.formatNumber(myAprilTagDetection.robotPose.getPosition().y, 6, 1) + " " + JavaUtil.formatNumber(myAprilTagDetection.robotPose.getPosition().z, 6, 1) + "  (inch)");
-                telemetry.addLine("PRY " + JavaUtil.formatNumber(myAprilTagDetection.robotPose.getOrientation().getPitch(), 6, 1) + " " + JavaUtil.formatNumber(myAprilTagDetection.robotPose.getOrientation().getRoll(), 6, 1) + " " + JavaUtil.formatNumber(myAprilTagDetection.robotPose.getOrientation().getYaw(), 6, 1) + "  (deg)");
-            } else {
-                telemetry.addLine("==== (ID " + myAprilTagDetection.id + ") Unknown");
-                telemetry.addLine("Center " + JavaUtil.formatNumber(myAprilTagDetection.center.x, 6, 0) + "" + JavaUtil.formatNumber(myAprilTagDetection.center.y, 6, 0) + " (pixels)");
-            }
-        }
-        telemetry.addLine("");
-        telemetry.addLine("key:");
-        telemetry.addLine("XYZ = X (Right), Y (Forward), Z (Up) dist.");
-        telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
-    }
-
     @Override
-    public void runOpMode() {
-        left_motor = hardwareMap.get(DcMotor.class, "left_motor");
-        right_motor = hardwareMap.get(DcMotor.class, "right_motor");
-        armlift = hardwareMap.get(DcMotor.class, "arm lift");
-        viper = hardwareMap.get(DcMotor.class, "viper");
-        grip = hardwareMap.get(Servo.class, "grip");
-        yaw = hardwareMap.get(CRServo.class, "yaw");
-        Viperspin = hardwareMap.get(CRServo.class, "Viperspin");
-
-//testing from adi
-        USE_WEBCAM = true;
-        // Put initialization blocks here.
-        cameraPosition = new Position(DistanceUnit.CM, 0, 0, 0, 0);
-        cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES, 0, -90, 0, 0);
-        // Initialize AprilTag before waitForStart.
-        initAprilTag();
-        telemetry.update();
+    public void runOpMode() throws InterruptedException {
+        boolean targetFound     = false;
+        driveChain.init(hardwareMap);
+        aprilTagVision.init(hardwareMap);
         waitForStart();
-        if (opModeIsActive()) {
-            // Put run blocks here.
-            gripperOpen = true;
-            while (opModeIsActive()) {
-                // Put loop blocks here.
-                speed_mod = 0.5;
-                if (gamepad1.options) {
-                    speed_mod -= 0.3;
-                }
-                if (gamepad1.left_bumper && gamepad1.touchpad_finger_1) {
-                    turn = gamepad1.touchpad_finger_1_x * speed_mod * 3;
-                    left_motor.setPower(Math.min(Math.max((drive_motor + turn) * 1, -1), 1));
-                    right_motor.setPower(-Math.min(Math.max(drive_motor - turn, -1), 1));
-                }
-                drive_motor = -gamepad1.left_stick_y * speed_mod;
-                turn = gamepad1.right_stick_x * speed_mod;
-                left_motor.setPower(Math.min(Math.max((drive_motor + turn) * 1, -1), 1));
-                right_motor.setPower(-Math.min(Math.max(drive_motor - turn, -1), 1));
-                // arm lift code
-                arm_lift_speedmod = 0.5;
-                arm_lift = gamepad2.left_stick_y * arm_lift_speedmod * -1;
-                armlift.setPower(Math.min(Math.max(arm_lift, -1), 1));
-                // small arm lift code
-                smallarmlift_speedmod = 1;
-                viper2 = (gamepad1.left_trigger - gamepad1.right_trigger) * smallarmlift_speedmod + 0.05;
-                viper.setPower(Math.min(Math.max(viper2, -1), 1));
-                //claw
-                telemetry.addData("small arm lift", viper2);
-                if (gamepad2.square) {
-                    grip.setPosition(0.3);
-                } else {
-                    grip.setPosition(0);
-                }
-                //yaw
-                telemetry.addData("dpad up", gamepad2.dpad_up);
-                telemetry.addData("dpad down", gamepad2.dpad_down);
-                telemetry.addData("dpad right", gamepad2.dpad_right);
-                telemetry.addData("dpad left", gamepad2.dpad_left);
-                telemetry.addData("Yaw power", yaw.getPower());
-                telemetry.addData("Viperspin power", Viperspin.getPower());
-                if (gamepad2.dpad_left) {
-                    yaw.setPower(1);
+        while (opModeIsActive()) {
 
+            //auto aim via april tag
+            if (gamepad1.left_bumper && targetFound) {
+                //find heading and range error to help calc the robots movement
+                double  rangeError   = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
+                double  headingError = desiredTag.ftcPose.bearing;
 
-                } else {
-                    yaw.setPower(0);
-                }
-                if (gamepad2.dpad_right) { yaw.setPower(-1); } else {yaw.setPower(0);}
-                // Jaw (viperspin)
-                if (gamepad2.dpad_up) { Viperspin.setPower(1); } else {Viperspin.setPower(0);}
-                if (gamepad2.dpad_down) {Viperspin.setPower(-1); } else {Viperspin.setPower(0);}
-                telemetryAprilTag();
-                telemetry.addData("turn value", turn);
-                telemetry.addData("target power", drive_motor);
+                //use the speed and turn gain constants times the errors to calc robot movement.
+                // clip to max
+                drivePower = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+                turn  = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
 
-                telemetry.addData("motor power", left_motor.getPower());
-                telemetry.update();
+                telemetry.addData("Auto","Drive %5.2f, Turn %5.2f", drivePower, turn);
+            } else {
+                //default single joystick tank drive
+                drivePower = -gamepad1.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
+                turn  = -gamepad1.left_stick_x / 4.0;  // Reduce turn rate to 25%.
+                telemetry.addData("Manual","Drive %5.2f, Turn %5.2f", drivePower, turn);
             }
+
+            driveChain.moveRobot(drivePower, turn);
         }
-
-    }
-
-    /**
-     * Initialize AprilTag Detection.
-     */
-    private void initAprilTag() {
-        AprilTagProcessor.Builder myAprilTagProcessorBuilder;
-        VisionPortal.Builder myVisionPortalBuilder;
-        VisionPortal myVisionPortal;
-
-        // First, create an AprilTagProcessor.Builder.
-        myAprilTagProcessorBuilder = new AprilTagProcessor.Builder();
-        myAprilTagProcessorBuilder.setCameraPose(cameraPosition, cameraOrientation);
-        // Create an AprilTagProcessor by calling build.
-        myAprilTagProcessor = myAprilTagProcessorBuilder.build();
-        // Next, create a VisionPortal.Builder and set attributes related to the camera.
-        myVisionPortalBuilder = new VisionPortal.Builder();
-        if (USE_WEBCAM) {
-            // Use a webcam.
-            myVisionPortalBuilder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
-        } else {
-            // Use the device's back camera.
-            myVisionPortalBuilder.setCamera(BuiltinCameraDirection.BACK);
-        }
-        // Add myAprilTagProcessor to the VisionPortal.Builder.
-        myVisionPortalBuilder.addProcessor(myAprilTagProcessor);
-        // Create a VisionPortal by calling build.
-        myVisionPortal = myVisionPortalBuilder.build();
     }
 }

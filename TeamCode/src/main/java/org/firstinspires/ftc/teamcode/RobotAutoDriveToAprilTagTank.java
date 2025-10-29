@@ -29,7 +29,6 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -86,7 +85,6 @@ import java.util.concurrent.TimeUnit;
  */
 
 @TeleOp(name="Tank Drive To AprilTag", group = "Concept")
-@Disabled
 public class RobotAutoDriveToAprilTagTank extends LinearOpMode
 {
     // Adjust these numbers to suit your robot.
@@ -191,8 +189,10 @@ public class RobotAutoDriveToAprilTagTank extends LinearOpMode
             } else {
 
                 // drive using manual POV Joystick mode.
-                drive = -gamepad1.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
-                turn  = -gamepad1.right_stick_x / 4.0;  // Reduce turn rate to 25%.
+                //drive = -gamepad1.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
+                //turn  = -gamepad1.right_stick_x / 4.0;  // Reduce turn rate to 25%.
+                drive = -gamepad1.left_stick_y;
+                turn = -gamepad1.right_stick_x;
                 telemetry.addData("Manual","Drive %5.2f, Turn %5.2f", drive, turn);
             }
             telemetry.update();
@@ -261,7 +261,7 @@ public class RobotAutoDriveToAprilTagTank extends LinearOpMode
      Manually set the camera gain and exposure.
      This can only be called AFTER calling initAprilTag(), and only works for Webcams;
     */
-    private void    setManualExposure(int exposureMS, int gain) {
+    private void setManualExposure(int exposureMS, int gain) {
         // Wait for the camera to be open, then use the controls
 
         if (visionPortal == null) {
