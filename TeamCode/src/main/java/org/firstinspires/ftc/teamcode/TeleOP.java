@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.mechanisms.AprilTagVision;
 import org.firstinspires.ftc.teamcode.mechanisms.DriveChainTank;
+import org.firstinspires.ftc.teamcode.mechanisms.RubberBandIntake;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -20,9 +21,11 @@ public class TeleOP extends LinearOpMode {
     //mech obj declare
     DriveChainTank driveChain = new DriveChainTank();
     AprilTagVision aprilTagVision = new AprilTagVision();
+    RubberBandIntake intake = new RubberBandIntake();
     //everything bloody else
-    final double DESIRED_DISTANCE = 24.0; //  this is how close the camera should get to the target (inches)
+    final double DESIRED_DISTANCE = 24.0; //this is how close the camera should get to the target (inches)
 
+    //vision constants from external.samples.RobotAutoDriveToAprilTagTank example op mode
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
@@ -44,6 +47,7 @@ public class TeleOP extends LinearOpMode {
         boolean targetFound     = false;
         driveChain.init(hardwareMap);
         aprilTagVision.init(hardwareMap);
+        intake.init(hardwareMap);
         waitForStart();
         while (opModeIsActive()) {
 
@@ -68,6 +72,14 @@ public class TeleOP extends LinearOpMode {
 
             driveChain.moveRobot(drivePower, turn);
             telemetry.update();
+        }
+        //intake motor
+        if (gamepad1.right_bumper) {
+            intake.intakePower(1);
+        } else if (gamepad2.cross) {
+            intake.eject();
+        } else {
+            intake.intakePower(0);
         }
     }
 }
