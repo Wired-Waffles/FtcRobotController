@@ -72,14 +72,15 @@ public class TeleOP extends LinearOpMode {
 
             driveChain.moveRobot(drivePower, turn);
             telemetry.update();
-        }
-        //intake motor
-        if (gamepad1.right_bumper) {
-            intake.intakePower(1);
-        } else if (gamepad2.cross) {
-            intake.eject();
-        } else {
-            intake.intakePower(0);
+
+            //intake motor
+            if (gamepad1.right_bumper) {
+                intake.intakePower(1);
+            } else if (gamepad2.cross) {
+                intake.eject();
+            } else {
+                intake.intakePower(0);
+            }
         }
     }
 }
