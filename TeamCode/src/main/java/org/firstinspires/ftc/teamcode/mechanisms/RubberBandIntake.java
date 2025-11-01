@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.mechanisms;
 
+import static java.lang.Thread.sleep;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -19,9 +21,9 @@ public class RubberBandIntake {
 
     public void eject() throws InterruptedException {
         intake.setPower(-0.8);
-        wait(1500);
+        sleep(3000);
         intake.setPower(0);
-        wait(100);
+        sleep(100);
     }
 
     public double getTotalRots (){
