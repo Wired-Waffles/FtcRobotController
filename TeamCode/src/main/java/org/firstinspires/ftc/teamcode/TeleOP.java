@@ -65,8 +65,8 @@ public class TeleOP extends LinearOpMode {
                 telemetry.addData("Auto","Drive %5.2f, Turn %5.2f", drivePower, turn);
             } else {
                 //default single joystick tank drive
-                drivePower = gamepad1.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
-                turn  = gamepad1.right_stick_x / 4.0;  // Reduce turn rate to 25%.
+                drivePower = -gamepad1.left_stick_y  / 1.5;  // Reduce drive rate to 50%.
+                turn  = gamepad1.right_stick_x / 2.0;  // Reduce turn rate to 25%.
                 telemetry.addData("Manual","Drive %5.2f, Turn %5.2f", drivePower, turn);
             }
 
