@@ -50,9 +50,9 @@ public class AprilTagRead {
         if (ID == null) return;
         if (ID.metadata != null) {
             telemetry.addLine(String.format("\n==== (ID %d) %s", ID.id, ID.metadata.name));
-            telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", ID.ftcPose.x, ID.ftcPose.y, ID.ftcPose.z));
+            telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (cm)", ID.ftcPose.x, ID.ftcPose.y, ID.ftcPose.z));
             telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", ID.ftcPose.pitch, ID.ftcPose.roll, ID.ftcPose.yaw));
-            telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", ID.ftcPose.range, ID.ftcPose.bearing, ID.ftcPose.elevation));
+            telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (cm, deg, deg)", ID.ftcPose.range, ID.ftcPose.bearing, ID.ftcPose.elevation));
         } else {
             telemetry.addLine(String.format("\n==== (ID %d) Unknown", ID.id));
             telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", ID.center.x, ID.center.y));
