@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.mechanisms.AprilTagRead;
 import org.firstinspires.ftc.teamcode.mechanisms.DriveChainTank;
+import org.firstinspires.ftc.teamcode.mechanisms.FlywheelShooter;
 import org.firstinspires.ftc.teamcode.mechanisms.RubberBandIntake;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -22,6 +23,8 @@ public class TeleOP extends LinearOpMode {
     DriveChainTank driveChain = new DriveChainTank();
     RubberBandIntake intake = new RubberBandIntake();
     AprilTagRead aprilTagReader = new AprilTagRead();
+
+    FlywheelShooter shooter = new FlywheelShooter();
     //everything bloody else
     double drivePower;
     double turn;
@@ -33,6 +36,7 @@ public class TeleOP extends LinearOpMode {
         driveChain.init(hardwareMap);
         intake.init(hardwareMap);
         aprilTagReader.init(hardwareMap, telemetry);
+        shooter.init(hardwareMap);
         waitForStart();
         while (opModeIsActive()) {
             aprilTagReader.update();
@@ -55,6 +59,16 @@ public class TeleOP extends LinearOpMode {
                 intake.eject();
             } else {
                 intake.intakePower(0);
+            }
+
+            if (gamepad1.right_bumper) {
+                shooter.start(30000);]
+
+
+
+
+
+
             }
         }
     }
