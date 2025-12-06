@@ -62,12 +62,7 @@ public class TeleOP extends LinearOpMode {
             }
 
             if (gamepad1.right_bumper) {
-                shooter.start(30000);]
-
-
-
-
-
+                shooter.start(30000);
 
             }
         }
