@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -14,13 +16,15 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class AprilTagRead {
     private AprilTagProcessor aprilTagProcessor;
     private VisionPortal vision;
     private List<AprilTagDetection> detectedTags = new ArrayList<>();
     private Telemetry telemetry;
-
+    boolean exposureSupport;
+    int maxGain, minGain;
     public void init(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
         aprilTagProcessor = new AprilTagProcessor.Builder()
@@ -36,6 +40,19 @@ public class AprilTagRead {
         builder.addProcessor(aprilTagProcessor);
 
         vision = builder.build();
+
+        while (vision.getCameraState() != VisionPortal.CameraState.STREAMING) {
+            //this just makes it wait for the camera to start streaming so no errors for being too early <3
+        }
+        ExposureControl exposure = vision.getCameraControl(ExposureControl.class);
+        exposureSupport= exposure.isExposureSupported();
+        exposure.setMode(ExposureControl.Mode.Manual);
+        exposure.setExposure(15, TimeUnit.MILLISECONDS);
+
+        GainControl gain = vision.getCameraControl(GainControl.class);
+        maxGain = gain.getMaxGain();
+        minGain = gain.getMinGain();
+        gain.setGain(255);
     }
     public void update(){
         detectedTags = aprilTagProcessor.getDetections();
@@ -49,6 +66,7 @@ public class AprilTagRead {
     public void displayTelemetry(AprilTagDetection ID) {
         if (ID == null) return;
         if (ID.metadata != null) {
+
             telemetry.addLine(String.format("\n==== (ID %d) %s", ID.id, ID.metadata.name));
             telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (cm)", ID.ftcPose.x, ID.ftcPose.y, ID.ftcPose.z));
             telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", ID.ftcPose.pitch, ID.ftcPose.roll, ID.ftcPose.yaw));
@@ -57,6 +75,18 @@ public class AprilTagRead {
             telemetry.addLine(String.format("\n==== (ID %d) Unknown", ID.id));
             telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", ID.center.x, ID.center.y));
         }
+    }
+
+    public boolean getExpoSprt() {
+        return exposureSupport;
+    }
+
+    public int getMaxGain() {
+        return maxGain;
+    }
+
+    public int getMinGain() {
+        return minGain;
     }
 
     public AprilTagDetection getTagByID(int ID){

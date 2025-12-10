@@ -30,6 +30,7 @@ public class TeleOP extends LinearOpMode {
     double turn;
 
     double driveMod = 1.5;
+
     @Override
     public void runOpMode() throws InterruptedException {
         boolean targetFound     = false;
@@ -42,29 +43,38 @@ public class TeleOP extends LinearOpMode {
             aprilTagReader.update();
             AprilTagDetection id20 = aprilTagReader.getTagByID(20);
             aprilTagReader.displayTelemetry(id20);
-            if (gamepad1.options) {
+            if (gamepad1.right_bumper) {
                 driveMod = 1;
             }
             drivePower = -gamepad1.left_stick_y  / driveMod;
             turn  = gamepad1.right_stick_x / 2.0;
-
-            telemetry.addData("Manual","Drive %5.2f, Turn %5.2f", drivePower, turn);
-            driveChain.moveRobot(drivePower, turn);
-            telemetry.update();
-
+            if (gamepad1.right_bumper && id20 != null) {
+               if (id20.ftcPose.x > 5) {
+                   turn = 0.2;
+               } else if (id20.ftcPose.x < -5) {
+                   turn = -0.2;
+               }
+            }
             //intake motor
-            if (gamepad1.right_bumper) {
+            if (gamepad2.right_bumper) {
                 intake.intakePower(1);
-            } else if (gamepad2.cross) {
+            } else if (gamepad2.a) {
                 intake.eject();
             } else {
                 intake.intakePower(0);
             }
 
-            if (gamepad1.right_bumper) {
-                shooter.start(30000);
-
+            if (gamepad2.circleWasPressed()) {
+                shooter.start(2200);
+            } else if (gamepad2.crossWasPressed()) {
+                shooter.kill();
             }
+            driveChain.moveRobot(drivePower, turn);
+            telemetry.addData("Exposure support", aprilTagReader.getExpoSprt());
+            telemetry.addData("Max gain", aprilTagReader.getMaxGain());
+            telemetry.addData("Min Gain", aprilTagReader.getMinGain());
+            telemetry.addData("Drive","Drive %5.2f, Turn %5.2f", drivePower, turn);
+            telemetry.update();
         }
     }
 }
