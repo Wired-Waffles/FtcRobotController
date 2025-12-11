@@ -42,21 +42,24 @@ public class TeleOP extends LinearOpMode {
         while (opModeIsActive()) {
             aprilTagReader.update();
             AprilTagDetection id20 = aprilTagReader.getTagByID(20);
-            aprilTagReader.displayTelemetry(id20);
+            AprilTagDetection id24 = aprilTagReader.getTagByID(24);
+            aprilTagReader.displayTelemetry(id24);
             if (gamepad1.right_bumper) {
                 driveMod = 1;
             }
             drivePower = -gamepad1.left_stick_y  / driveMod;
             turn  = gamepad1.right_stick_x / 2.0;
-            if (gamepad1.right_bumper && id20 != null) {
-               if (id20.ftcPose.x > 5) {
+            if (gamepad1.right_bumper && id24 != null) {
+               if (id24.ftcPose.x > 5) {
                    turn = 0.2;
-               } else if (id20.ftcPose.x < -5) {
+               } else if (id24.ftcPose.x < -5) {
                    turn = -0.2;
                }
             }
+
+
             //intake motor
-            if (gamepad2.right_bumper) {
+            if (gamepad2.dpad_up) {
                 intake.intakePower(1);
             } else if (gamepad2.a) {
                 intake.eject();
@@ -64,9 +67,12 @@ public class TeleOP extends LinearOpMode {
                 intake.intakePower(0);
             }
 
-            if (gamepad2.circleWasPressed()) {
-                shooter.start(2200);
-            } else if (gamepad2.crossWasPressed()) {
+            if (gamepad2.circle) {
+                shooter.start(1700);
+                intake.intakePower(0);
+            } else if(gamepad2.triangle) {
+                shooter.start(2130);
+            } else if (gamepad2.cross) {
                 shooter.kill();
             }
             driveChain.moveRobot(drivePower, turn);
@@ -74,6 +80,7 @@ public class TeleOP extends LinearOpMode {
             telemetry.addData("Max gain", aprilTagReader.getMaxGain());
             telemetry.addData("Min Gain", aprilTagReader.getMinGain());
             telemetry.addData("Drive","Drive %5.2f, Turn %5.2f", drivePower, turn);
+            telemetry.addData("Flywheel speed", shooter.getVelo());
             telemetry.update();
         }
     }

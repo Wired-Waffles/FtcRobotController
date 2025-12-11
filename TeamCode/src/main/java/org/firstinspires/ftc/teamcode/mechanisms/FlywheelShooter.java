@@ -22,4 +22,8 @@ public class FlywheelShooter {
         shooter.setVelocity(0);
     }
 
+    public double getVelo() {
+        return shooter.getVelocity();
+    }
+
 }
