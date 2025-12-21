@@ -30,8 +30,8 @@ public class AprilTagRead {
         aprilTagProcessor = new AprilTagProcessor.Builder()
                 .setDrawTagID(true)
                 .setDrawTagOutline(true)
-                .setDrawAxes(true)
-                .setDrawCubeProjection(true)
+                .setDrawAxes(false)
+                .setDrawCubeProjection(false)
                 .setOutputUnits(DistanceUnit.CM, AngleUnit.DEGREES)
                 .build();
         VisionPortal.Builder builder = new VisionPortal.Builder();
