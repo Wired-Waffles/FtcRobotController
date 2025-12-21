@@ -3,16 +3,12 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.mechanisms.AprilTagRead;
 import org.firstinspires.ftc.teamcode.mechanisms.DriveChainTank;
 import org.firstinspires.ftc.teamcode.mechanisms.FlywheelShooter;
 import org.firstinspires.ftc.teamcode.mechanisms.RubberBandIntake;
-import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 @TeleOp(name = "TeleOP main")
 public class TeleOP extends LinearOpMode {
@@ -30,6 +26,12 @@ public class TeleOP extends LinearOpMode {
     double turn;
 
     double driveMod = 1.5;
+    enum controlMode {
+        RED_AUTO_AIM,
+        BLUE_AUTO_AIM,
+        BOTH_SOMEHOW,
+        MANUAL;
+    }
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -39,24 +41,45 @@ public class TeleOP extends LinearOpMode {
         aprilTagReader.init(hardwareMap, telemetry);
         shooter.init(hardwareMap);
         waitForStart();
+        controlMode controlCase = controlMode.MANUAL;
         while (opModeIsActive()) {
             aprilTagReader.update();
             AprilTagDetection id20 = aprilTagReader.getTagByID(20);
             AprilTagDetection id24 = aprilTagReader.getTagByID(24);
+            aprilTagReader.displayTelemetry(id20);
             aprilTagReader.displayTelemetry(id24);
             if (gamepad1.right_bumper) {
                 driveMod = 1;
             }
             drivePower = -gamepad1.left_stick_y  / driveMod;
-            turn  = gamepad1.right_stick_x / 2.0;
-            if (gamepad1.right_bumper && id24 != null) {
-               if (id24.ftcPose.x > 5) {
-                   turn = 0.2;
-               } else if (id24.ftcPose.x < -5) {
-                   turn = -0.2;
-               }
-            }
+            //turn  = gamepad1.right_stick_x / 2.0;
 
+            if (id20 != null && id24 != null){
+                controlCase = controlMode.MANUAL;
+            }
+            else if (gamepad1.right_bumper && id24 != null) {
+                controlCase = controlMode.BLUE_AUTO_AIM;
+            } else if (gamepad1.right_bumper && id20 != null) {
+                controlCase = controlMode.RED_AUTO_AIM;
+            } else {
+                controlCase = controlMode.MANUAL;
+            }
+            switch (controlCase) {
+                case RED_AUTO_AIM:
+                    if (id20.ftcPose.x > 5) {
+                        turn = 0.2;
+                    } else if (id20.ftcPose.x < -5) {
+                        turn = -0.2;
+                    }
+                case BLUE_AUTO_AIM:
+                    if (id24.ftcPose.x > 5) {
+                        turn = 0.2;
+                    } else if (id24.ftcPose.x < -5) {
+                        turn = -0.2;
+                    }
+                default:
+                    turn  = gamepad1.right_stick_x / 2.0;
+            }
 
             //intake motor
             if (gamepad2.dpad_up) {
